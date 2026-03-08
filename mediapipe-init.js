@@ -1,27 +1,27 @@
 /**
- * MediaPipe Face Detector loader.
- * Exposes window.getFaceDetector() which returns a Promise<FaceDetector>.
- * Use runningMode VIDEO for webcam; detects 1 or 2 faces (model-dependent).
+ * MediaPipe Face Landmarker loader (with blendshapes for smile/frown).
+ * Exposes window.getFaceLandmarker() which returns a Promise<FaceLandmarker>.
  */
 import {
-  FaceDetector,
+  FaceLandmarker,
   FilesetResolver,
 } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
 
 let cached = null;
 
-window.getFaceDetector = async function () {
+window.getFaceLandmarker = async function () {
   if (cached) return cached;
   const vision = await FilesetResolver.forVisionTasks(
     "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
   );
-  cached = await FaceDetector.createFromOptions(vision, {
+  cached = await FaceLandmarker.createFromOptions(vision, {
     baseOptions: {
       modelAssetPath:
-        "https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite",
+        "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
     },
     runningMode: "VIDEO",
-    minDetectionConfidence: 0.5,
+    outputFaceBlendshapes: true,
+    numFaces: 1,
   });
   return cached;
 };
